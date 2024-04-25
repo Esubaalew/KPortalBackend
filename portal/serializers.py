@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, LinkResource, FileResource
+from .models import CustomUser, Resource
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -8,14 +8,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'first_name', 'last_name', 'bio']
 
 
-class LinkResourceSerializer(serializers.ModelSerializer):
+class ResourceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = LinkResource
-        fields = ['id', 'language', 'caption', 'topic', 'resource_type', 'url', 'owner', 'date_shared', 'date_modified']
-
-
-class FileResourceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FileResource
-        fields = ['id', 'language', 'caption', 'topic', 'resource_type', 'file', 'owner', 'date_shared',
-                  'date_modified']
+        model = Resource
+        fields = ['id', 'language', 'caption', 'topic', 'owner', 'url', 'file', 'photo', 'date_shared', 'date_modified']

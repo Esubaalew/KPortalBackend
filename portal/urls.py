@@ -1,13 +1,12 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import UserViewSet, LinkResourceViewSet, FileResourceViewSet
+from .views import UserViewSet, ResourceViewSet, get_file_metadata
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
-router.register(r'link-resources', LinkResourceViewSet, basename='link-resource')
-router.register(r'file-resources', FileResourceViewSet, basename='file-resource')
-
+router.register(r'resources', ResourceViewSet, basename='resource')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('metadata/<int:file_id>/', get_file_metadata, name='file-metadata'),
 ]
