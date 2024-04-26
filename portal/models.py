@@ -27,5 +27,8 @@ class Resource(models.Model):
     date_shared = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ['-date_shared']
+
     def __str__(self):
         return self.caption
