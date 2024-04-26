@@ -1,7 +1,10 @@
+from django.contrib.auth import authenticate, login
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
-from .serializers import CustomUserSerializer, ResourceSerializer
-from rest_framework import viewsets, status
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from .serializers import CustomUserSerializer, ResourceSerializer, UserSerializer, UserSignInSerializer
+from rest_framework import viewsets, status, generics, permissions
 from PyPDF2 import PdfReader
 from .models import Resource, CustomUser
 import os
@@ -40,3 +43,36 @@ class ResourceViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Resource not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UserSignUpView(generics.CreateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def perform_create(self, serializer):
+        user = serializer.save()
+        if user:
+            refresh = RefreshToken.for_user(user)
+            # Return tokens as JSON data along with HTTP 201 Created
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }, status=status.HTTP_201_CREATED)
+
+
+class UserSignInView(generics.CreateAPIView):
+    serializer_class = UserSignInSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user:
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
