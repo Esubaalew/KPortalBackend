@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate, login
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import CustomUserSerializer, ResourceSerializer, UserSerializer, UserSignInSerializer
@@ -90,3 +92,13 @@ def logged_in_user(request):
 
     }
     return Response(user_data)
+
+
+class GetUserByUsername(APIView):
+    def get(self, request, username):
+        try:
+            user = CustomUser.objects.get(username=username)
+            serializer = CustomUserSerializer(user)
+            return Response(serializer.data)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
