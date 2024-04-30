@@ -1,1 +1,1 @@
- web: gunicorn KPortalBackend.wasgi
+ web: gunicorn KPortalBackend.wsgi
