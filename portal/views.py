@@ -88,6 +88,7 @@ class UserSignInView(generics.CreateAPIView):
 def logged_in_user(request):
     user = request.user
     user_data = {
+        'id': user.id,
         'username': user.username,
         'email': user.email,
         'first_name': user.first_name,
