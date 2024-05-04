@@ -42,7 +42,7 @@ class Like(models.Model):
     class Meta:
         unique_together = ['resource', 'user']
 
-    def likes_count(self):
+    def get_likes_count(self):
         return self.objects.count()
 
     def __str__(self):
@@ -56,7 +56,7 @@ class Comment(models.Model):
     date_commented = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
-    def comments_count(self):
+    def get_comments_count(self):
         return self.objects.count()
 
     def __str__(self):

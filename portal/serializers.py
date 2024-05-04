@@ -22,11 +22,11 @@ class ResourceSerializer(serializers.ModelSerializer):
             'likes_count', 'comments_count'
         ]
 
-        def get_likes_count(self, obj):
-            return obj.likes.count()
+    def get_likes_count(self, obj):
+        return obj.likes.count()
 
-        def get_comments_count(self, obj):
-            return obj.comments.count()
+    def get_comments_count(self, obj):
+        return obj.comments.count()
 
 
 class UserSerializer(serializers.ModelSerializer):
