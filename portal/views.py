@@ -49,6 +49,52 @@ class ResourceViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @action(detail=True, methods=['post'])
+    def like(self, request, pk=None):
+        resource = self.get_object()
+        user = request.user
+        like, created = Like.objects.get_or_create(resource=resource, user=user)
+        if created:
+            return Response({'message': 'Resource liked'})
+        else:
+            return Response({'message': 'Resource already liked'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'])
+    def unlike(self, request, pk=None):
+        resource = self.get_object()
+        user = request.user
+        like = Like.objects.filter(resource=resource, user=user).first()
+        if like:
+            like.delete()
+            return Response({'message': 'Resource unliked'})
+        else:
+            return Response({'message': 'Resource not liked'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'])
+    def comment(self, request, pk=None):
+        resource = self.get_object()
+        user = request.user
+        comment_text = request.data.get('comment')
+        if comment_text:
+            comment = Comment.objects.create(resource=resource, user=user, comment=comment_text)
+            return Response({'message': 'Comment added'})
+        else:
+            return Response({'error': 'Comment text is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['get'])
+    def comments(self, request, pk=None):
+        resource = self.get_object()
+        comments = resource.comments.all()
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def likes(self, request, pk=None):
+        resource = self.get_object()
+        likes = resource.likes.all()
+        serializer = LikeSerializer(likes, many=True)
+        return Response(serializer.data)
+
 
 class UserSignUpView(generics.CreateAPIView):
     serializer_class = UserSerializer
@@ -107,9 +153,11 @@ class GetUserByUsername(APIView):
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
+
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
