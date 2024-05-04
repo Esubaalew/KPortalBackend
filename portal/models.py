@@ -32,3 +32,32 @@ class Resource(models.Model):
 
     def __str__(self):
         return self.caption
+
+
+class Like(models.Model):
+    resource = models.ForeignKey(Resource, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    date_liked = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['resource', 'user']
+
+    def likes_count(self):
+        return self.objects.count()
+
+    def __str__(self):
+        return f'{self.user.username} likes {self.resource.caption}'
+
+
+class Comment(models.Model):
+    resource = models.ForeignKey(Resource, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    comment = models.TextField()
+    date_commented = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+
+    def comments_count(self):
+        return self.objects.count()
+
+    def __str__(self):
+        return f'{self.user.username} commented on {self.resource.caption}'

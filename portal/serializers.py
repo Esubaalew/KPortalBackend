@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from .models import CustomUser, Resource
+from .models import CustomUser, Resource, Like, Comment
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -10,9 +10,23 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class ResourceSerializer(serializers.ModelSerializer):
+    likes_count = serializers.SerializerMethodField()
+    comments_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Resource
-        fields = ['id', 'language', 'caption', 'topic', 'owner', 'url', 'file', 'photo', 'date_shared', 'date_modified']
+        fields = [
+            'id', 'language', 'caption',
+            'topic', 'owner', 'url', 'file',
+            'photo', 'date_shared', 'date_modified',
+            'likes_count', 'comments_count'
+        ]
+
+        def get_likes_count(self, obj):
+            return obj.likes.count()
+
+        def get_comments_count(self, obj):
+            return obj.comments.count()
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -53,3 +67,25 @@ class UserSignInSerializer(serializers.Serializer):
 
         data['user'] = user
         return data
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = '__all__'
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        like, created = Like.objects.get_or_create(user=user, **validated_data)
+        return like
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        comment = Comment.objects.create(user=user, **validated_data)
+        return comment

@@ -6,13 +6,15 @@ from .views import (
     UserSignUpView,
     UserSignInView,
     logged_in_user,
-    GetUserByUsername
+    GetUserByUsername, LikeViewSet, CommentViewSet
 
 )
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'resources', ResourceViewSet, basename='resource')
+router.register(r'likes', LikeViewSet)
+router.register(r'comments', CommentViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
