@@ -162,3 +162,14 @@ class LikeViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
+
+class UserResourceListView(generics.ListAPIView):
+    serializer_class = ResourceSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        username = self.kwargs['username']
+        user = get_object_or_404(CustomUser, username=username)
+        return Resource.objects.filter(owner=user)
+

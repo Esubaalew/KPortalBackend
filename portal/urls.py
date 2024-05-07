@@ -6,7 +6,9 @@ from .views import (
     UserSignUpView,
     UserSignInView,
     logged_in_user,
-    GetUserByUsername, LikeViewSet, CommentViewSet
+    GetUserByUsername, LikeViewSet, CommentViewSet,
+    UserResourceListView,
+
 
 )
 
@@ -22,5 +24,5 @@ urlpatterns = [
     path('signin/', UserSignInView.as_view(), name='user-signin'),
     path('loggedin/', logged_in_user, name='logged-in-user'),
     path('user/<str:username>/', GetUserByUsername.as_view(), name='get-user-by-username'),
-
+    path('user/<str:username>/resources/', UserResourceListView.as_view(), name='user-resources'),
 ]
