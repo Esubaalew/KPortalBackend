@@ -6,10 +6,10 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import CustomUserSerializer, ResourceSerializer, UserSerializer, UserSignInSerializer, LikeSerializer, \
-    CommentSerializer
+    CommentSerializer, FollowSerializer
 from rest_framework import viewsets, status, generics, permissions
 from PyPDF2 import PdfReader
-from .models import Resource, CustomUser, Like, Comment
+from .models import Resource, CustomUser, Like, Comment, Follow
 import os
 from docx import Document
 
@@ -18,6 +18,20 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    @action(detail=True, methods=['get'])
+    def followers(self, request, pk=None):
+        user = self.get_object()
+        followers = user.followers.all()
+        serializer = FollowSerializer(followers, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def following(self, request, pk=None):
+        user = self.get_object()
+        following = user.following.all()
+        serializer = FollowSerializer(following, many=True)
+        return Response(serializer.data)
 
 
 class ResourceViewSet(viewsets.ModelViewSet):
@@ -173,3 +187,37 @@ class UserResourceListView(generics.ListAPIView):
         user = get_object_or_404(CustomUser, username=username)
         return Resource.objects.filter(owner=user)
 
+
+class FollowViewSet(viewsets.ModelViewSet):
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    @action(detail=False, methods=['post'])
+    def follow_user(self, request):
+        followed_user_id = request.data.get('followed_user_id')
+        follower = request.user
+        try:
+            followed_user = CustomUser.objects.get(id=followed_user_id)
+            if follower != followed_user:
+                Follow.objects.create(follower=follower, followed_user=followed_user)
+                return Response({'message': f'You are now following {followed_user.username}'})
+            else:
+                return Response({'error': 'You cannot follow yourself'})
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'})
+
+    @action(detail=False, methods=['post'])
+    def unfollow_user(self, request):
+        followed_user_id = request.data.get('followed_user_id')
+        follower = request.user
+        try:
+            followed_user = CustomUser.objects.get(id=followed_user_id)
+            follow_instance = Follow.objects.filter(follower=follower, followed_user=followed_user)
+            if follow_instance.exists():
+                follow_instance.delete()
+                return Response({'message': f'You have unfollowed {followed_user.username}'})
+            else:
+                return Response({'error': 'You were not following this user'})
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'})

@@ -61,3 +61,15 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'{self.user.username} commented on {self.resource.caption}'
+
+
+class Follow(models.Model):
+    follower = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='following')
+    followed_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='followers')
+    date_followed = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['follower', 'followed_user']
+
+    def __str__(self):
+        return f'{self.follower.username} follows {self.followed_user.username}'

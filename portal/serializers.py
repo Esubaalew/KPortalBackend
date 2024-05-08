@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from .models import CustomUser, Resource, Like, Comment
+from .models import CustomUser, Resource, Like, Comment, Follow
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -89,3 +89,9 @@ class CommentSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         comment = Comment.objects.create(user=user, **validated_data)
         return comment
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = '__all__'
