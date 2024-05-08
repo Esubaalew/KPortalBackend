@@ -27,4 +27,8 @@ urlpatterns = [
     path('user/<str:username>/resources/', UserResourceListView.as_view(), name='user-resources'),
     path('follow/', FollowViewSet.as_view({'post': 'follow_user'}), name='follow-user'),
     path('unfollow/', FollowViewSet.as_view({'post': 'unfollow_user'}), name='unfollow-user'),
+    path('like/<int:pk>/', ResourceViewSet.as_view({'post': 'like'}), name='resource-like'),
+    path('unlike/<int:pk>/', ResourceViewSet.as_view({'post': 'unlike'}), name='resource-unlike'),
+    path('comment/<int:pk>/', ResourceViewSet.as_view({'post': 'comment'}), name='resource-comment'),
+
 ]
