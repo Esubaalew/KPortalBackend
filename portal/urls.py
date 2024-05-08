@@ -8,7 +8,7 @@ from .views import (
     logged_in_user,
     GetUserByUsername, LikeViewSet, CommentViewSet,
     UserResourceListView,
-FollowViewSet
+    FollowViewSet
 )
 
 router = routers.DefaultRouter()
