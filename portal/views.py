@@ -73,7 +73,7 @@ class ResourceViewSet(viewsets.ModelViewSet):
         else:
             return Response({'message': 'Resource already liked'}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['post', 'delete'])
     def unlike(self, request, pk=None):
         resource = self.get_object()
         user = request.user
