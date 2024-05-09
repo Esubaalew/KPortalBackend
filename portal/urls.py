@@ -8,7 +8,7 @@ from .views import (
     logged_in_user,
     GetUserByUsername, LikeViewSet, CommentViewSet,
     UserResourceListView,
-    FollowViewSet
+    FollowViewSet, UserSearchView
 )
 
 router = routers.DefaultRouter()
@@ -30,5 +30,6 @@ urlpatterns = [
     path('like/<int:pk>/', ResourceViewSet.as_view({'post': 'like'}), name='resource-like'),
     path('unlike/<int:pk>/', ResourceViewSet.as_view({'post': 'unlike'}), name='resource-unlike'),
     path('comment/<int:pk>/', ResourceViewSet.as_view({'post': 'comment'}), name='resource-comment'),
+    path('account/search/', UserSearchView.as_view(), name='user-search'),
 
 ]

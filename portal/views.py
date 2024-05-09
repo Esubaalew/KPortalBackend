@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.response import Response
@@ -6,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import CustomUserSerializer, ResourceSerializer, UserSerializer, UserSignInSerializer, LikeSerializer, \
-    CommentSerializer, FollowSerializer
+    CommentSerializer, FollowSerializer, UserSearchSerializer
 from rest_framework import viewsets, status, generics, permissions
 from PyPDF2 import PdfReader
 from .models import Resource, CustomUser, Like, Comment, Follow
@@ -221,3 +222,22 @@ class FollowViewSet(viewsets.ModelViewSet):
                 return Response({'error': 'You were not following this user'})
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'})
+
+
+class UserSearchView(APIView):
+    def get(self, request):
+        serializer = UserSearchSerializer(data=request.query_params)
+        if serializer.is_valid():
+            query = serializer.validated_data['query']
+
+            users = CustomUser.objects.filter(
+                Q(username__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query))
+
+            serializer = CustomUserSerializer(users, many=True)
+            return Response(serializer.data)
+        else:
+
+            return Response(
+                serializer.errors,
+                status=400
+            )

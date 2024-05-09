@@ -95,3 +95,17 @@ class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = '__all__'
+
+
+class UserSearchSerializer(serializers.Serializer):
+    query = serializers.CharField()
+
+    def validate_query(self, value):
+        """
+        Validate the query parameter.
+        """
+        if not value.strip():
+            raise serializers.ValidationError("Query parameter cannot be empty.")
+        return value
+
+
