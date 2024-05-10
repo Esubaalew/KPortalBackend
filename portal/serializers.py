@@ -98,7 +98,7 @@ class FollowSerializer(serializers.ModelSerializer):
 
 
 class UserSearchSerializer(serializers.Serializer):
-    query = serializers.CharField()
+    query = serializers.CharField(min_length=3)
 
     def validate_query(self, value):
         """
@@ -109,3 +109,13 @@ class UserSearchSerializer(serializers.Serializer):
         return value
 
 
+class ResourceSearchSerializer(serializers.Serializer):
+    query = serializers.CharField(min_length=3)
+
+    def validate_query(self, value):
+        """
+        Validate the query parameter.
+        """
+        if not value.strip():
+            raise serializers.ValidationError("Query parameter cannot be empty.")
+        return value

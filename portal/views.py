@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import CustomUserSerializer, ResourceSerializer, UserSerializer, UserSignInSerializer, LikeSerializer, \
-    CommentSerializer, FollowSerializer, UserSearchSerializer
+    CommentSerializer, FollowSerializer, UserSearchSerializer, ResourceSearchSerializer
 from rest_framework import viewsets, status, generics, permissions
 from PyPDF2 import PdfReader
 from .models import Resource, CustomUser, Like, Comment, Follow
@@ -241,3 +241,18 @@ class UserSearchView(APIView):
                 serializer.errors,
                 status=400
             )
+
+
+class ResourceSearchView(APIView):
+    def get(self, request):
+        serializer = ResourceSearchSerializer(data=request.query_params)
+        if serializer.is_valid():
+            query = serializer.validated_data['query']
+
+            resources = Resource.objects.filter(
+                Q(caption__icontains=query) | Q(topic__icontains=query) | Q(language__icontains=query))
+
+            serializer = ResourceSerializer(resources, many=True)
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=400)
