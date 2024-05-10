@@ -98,7 +98,7 @@ class FollowSerializer(serializers.ModelSerializer):
 
 
 class UserSearchSerializer(serializers.Serializer):
-    query = serializers.CharField(min_length=3)
+    query = serializers.CharField()
 
     def validate_query(self, value):
         """
@@ -110,7 +110,7 @@ class UserSearchSerializer(serializers.Serializer):
 
 
 class ResourceSearchSerializer(serializers.Serializer):
-    query = serializers.CharField(min_length=3)
+    query = serializers.CharField()
 
     def validate_query(self, value):
         """
