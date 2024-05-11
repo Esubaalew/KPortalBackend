@@ -1,9 +1,11 @@
 import six
 from django.contrib.auth import authenticate, login
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
+from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.response import Response
@@ -290,13 +292,20 @@ class PasswordResetRequestAPIView(APIView):
             token = password_reset_token_generator.make_token(user)
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
             reset_link = f"{settings.FRONTEND_URL}/password-reset-confirm/{uidb64}/{token}/"
-            send_mail(
-                'Password Reset',
-                f'Click the following link to reset your password: {reset_link}',
-                settings.EMAIL_HOST_USER,
-                [email],
-                fail_silently=False,
-            )
+
+            # Render HTML email template
+            html_content = render_to_string('password_reset_email.html', {'reset_link': reset_link})
+            text_content = strip_tags(html_content)
+
+            # Send email
+            subject = 'Password Reset'
+            from_email = settings.EMAIL_HOST_USER
+            to_email = [email]
+
+            msg = EmailMultiAlternatives(subject, text_content, from_email, to_email)
+            msg.attach_alternative(html_content, "text/html")
+            msg.send(fail_silently=False)
+
             return Response({'message': 'Password reset link has been sent to your email.'}, status=status.HTTP_200_OK)
         return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
