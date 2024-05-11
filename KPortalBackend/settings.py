@@ -150,4 +150,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'esubalewchekol6@gmail.com'
 EMAIL_HOST_PASSWORD = 'uyvf eyov orqa yrcv'
 
-FRONTEND_URL = 'http://localhost:3000'
+FRONTEND_URL = 'https://enimar.esube.com.et'
