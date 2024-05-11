@@ -8,7 +8,7 @@ from .views import (
     logged_in_user,
     GetUserByUsername, LikeViewSet, CommentViewSet,
     UserResourceListView,
-    FollowViewSet, UserSearchView, ResourceSearchView
+    FollowViewSet, UserSearchView, ResourceSearchView, PasswordResetRequestAPIView, PasswordResetConfirmAPIView
 )
 
 router = routers.DefaultRouter()
@@ -32,5 +32,8 @@ urlpatterns = [
     path('comment/<int:pk>/', ResourceViewSet.as_view({'post': 'comment'}), name='resource-comment'),
     path('account/search/', UserSearchView.as_view(), name='user-search'),
     path('res/search/', ResourceSearchView.as_view(), name='resource_search'),
+    path('password-reset/', PasswordResetRequestAPIView.as_view(), name='password_reset_request'),
+    path('password-reset-confirm/<str:uidb64>/<str:token>/', PasswordResetConfirmAPIView.as_view(), name='password_reset_confirm'),
+
 
 ]

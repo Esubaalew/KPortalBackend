@@ -1,13 +1,31 @@
+import six
 from django.contrib.auth import authenticate, login
+from django.core.mail import send_mail
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
+
+class MyTokenGenerator(PasswordResetTokenGenerator):
+    def _make_hash_value(self, user, timestamp):
+        return (
+                six.text_type(user.pk) + six.text_type(timestamp) +
+                six.text_type(user.is_active)
+        )
+
+
+password_reset_token_generator = MyTokenGenerator()
+
+from KPortalBackend import settings
 from .serializers import CustomUserSerializer, ResourceSerializer, UserSerializer, UserSignInSerializer, LikeSerializer, \
-    CommentSerializer, FollowSerializer, UserSearchSerializer, ResourceSearchSerializer
+    CommentSerializer, FollowSerializer, UserSearchSerializer, ResourceSearchSerializer, PasswordResetConfirmSerializer, \
+    PasswordResetRequestSerializer
 from rest_framework import viewsets, status, generics, permissions
 from PyPDF2 import PdfReader
 from .models import Resource, CustomUser, Like, Comment, Follow
@@ -256,3 +274,61 @@ class ResourceSearchView(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=400)
+
+
+class PasswordResetRequestAPIView(APIView):
+    serializer_class = PasswordResetRequestSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        email = request.data.get('email')
+        user = CustomUser.objects.filter(email=email).first()
+        if user:
+            token = password_reset_token_generator.make_token(user)
+            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_link = f"{settings.FRONTEND_URL}/password-reset-confirm/{uidb64}/{token}/"
+            send_mail(
+                'Password Reset',
+                f'Click the following link to reset your password: {reset_link}',
+                settings.EMAIL_HOST_USER,
+                [email],
+                fail_silently=False,
+            )
+            return Response({'message': 'Password reset link has been sent to your email.'}, status=status.HTTP_200_OK)
+        return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class PasswordResetConfirmAPIView(APIView):
+    serializer_class = PasswordResetConfirmSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, uidb64, token):
+        serializer = self.serializer_class(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Decode the uidb64 to get user ID
+            try:
+                user_id = urlsafe_base64_decode(uidb64).decode()
+            except (TypeError, ValueError, OverflowError):
+                user_id = None
+
+            if user_id is not None:
+                user = CustomUser.objects.filter(pk=user_id).first()
+
+                # Validate the token
+                if user and password_reset_token_generator.check_token(user, token):
+                    new_password = serializer.validated_data.get('new_password')
+                    user.set_password(new_password)
+                    user.save()
+                    return Response({'message': 'Password reset successful.'}, status=status.HTTP_200_OK)
+                else:
+                    return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'error': 'Invalid user ID.'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

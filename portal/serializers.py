@@ -119,3 +119,11 @@ class ResourceSearchSerializer(serializers.Serializer):
         if not value.strip():
             raise serializers.ValidationError("Query parameter cannot be empty.")
         return value
+
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    new_password = serializers.CharField(min_length=8)
