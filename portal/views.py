@@ -271,7 +271,7 @@ class ResourceSearchView(APIView):
             query = serializer.validated_data['query']
 
             resources = Resource.objects.filter(
-                Q(caption__icontains=query) | Q(topic__icontains=query) | Q(language__icontains=query))
+                Q(caption__icontains=query) | Q(topic__icontains=query))
 
             serializer = ResourceSerializer(resources, many=True)
             return Response(serializer.data)
