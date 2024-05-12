@@ -17,7 +17,7 @@ class ResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Resource
         fields = [
-            'id', 'language', 'language_name',
+            'id', 'language_name',
             'caption', 'topic', 'owner', 'url', 'file',
             'photo', 'date_shared', 'date_modified',
             'likes_count', 'comments_count'
