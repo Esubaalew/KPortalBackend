@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from .models import CustomUser, Resource, Like, Comment, Follow
+from .models import CustomUser, Resource, Like, Comment, Follow, Language
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -12,12 +12,13 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class ResourceSerializer(serializers.ModelSerializer):
     likes_count = serializers.SerializerMethodField()
     comments_count = serializers.SerializerMethodField()
+    language_name = serializers.CharField(source='language.name')  # Add this line
 
     class Meta:
         model = Resource
         fields = [
-            'id', 'language', 'caption',
-            'topic', 'owner', 'url', 'file',
+            'id', 'language', 'language_name',
+            'caption', 'topic', 'owner', 'url', 'file',
             'photo', 'date_shared', 'date_modified',
             'likes_count', 'comments_count'
         ]
@@ -127,3 +128,9 @@ class PasswordResetRequestSerializer(serializers.Serializer):
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
     new_password = serializers.CharField(min_length=8)
+
+
+class LanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Language
+        fields = ['id', 'name', 'shorty', 'description']

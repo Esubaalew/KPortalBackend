@@ -16,8 +16,17 @@ def upload_to(instance, filename):
     return f'resources/{instance.owner.username}/{filename}'
 
 
+class Language(models.Model):
+    name = models.CharField(max_length=100)
+    shorty = models.CharField(max_length=100)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+
 class Resource(models.Model):
-    language = models.CharField(max_length=100)
+    language = models.ForeignKey(Language, on_delete=models.CASCADE)
     caption = models.CharField(max_length=255)
     topic = models.CharField(max_length=255)
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

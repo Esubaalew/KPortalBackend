@@ -14,6 +14,16 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 import requests
 
+from KPortalBackend import settings
+from .serializers import CustomUserSerializer, ResourceSerializer, UserSerializer, UserSignInSerializer, LikeSerializer, \
+    CommentSerializer, FollowSerializer, UserSearchSerializer, ResourceSearchSerializer, PasswordResetConfirmSerializer, \
+    PasswordResetRequestSerializer, LanguageSerializer
+from rest_framework import viewsets, status, generics, permissions
+from PyPDF2 import PdfReader
+from .models import Resource, CustomUser, Like, Comment, Follow, Language
+import os
+from docx import Document
+
 
 class MyTokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
@@ -24,16 +34,6 @@ class MyTokenGenerator(PasswordResetTokenGenerator):
 
 
 password_reset_token_generator = MyTokenGenerator()
-
-from KPortalBackend import settings
-from .serializers import CustomUserSerializer, ResourceSerializer, UserSerializer, UserSignInSerializer, LikeSerializer, \
-    CommentSerializer, FollowSerializer, UserSearchSerializer, ResourceSearchSerializer, PasswordResetConfirmSerializer, \
-    PasswordResetRequestSerializer
-from rest_framework import viewsets, status, generics, permissions
-from PyPDF2 import PdfReader
-from .models import Resource, CustomUser, Like, Comment, Follow
-import os
-from docx import Document
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -359,3 +359,9 @@ class GitHubRepoSearchAPIView(APIView):
             return Response(search_results, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Failed to fetch search results'}, status=response.status_code)
+
+
+class LanguageViewSet(viewsets.ModelViewSet):
+    queryset = Language.objects.all()
+    serializer_class = LanguageSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
