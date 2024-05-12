@@ -12,7 +12,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class ResourceSerializer(serializers.ModelSerializer):
     likes_count = serializers.SerializerMethodField()
     comments_count = serializers.SerializerMethodField()
-    language_name = serializers.CharField(source='language.name')  # Add this line
+    language_name = serializers.CharField(source='language.name', read_only=True)  # Add this line
 
     class Meta:
         model = Resource
