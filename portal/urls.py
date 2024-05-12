@@ -8,7 +8,8 @@ from .views import (
     logged_in_user,
     GetUserByUsername, LikeViewSet, CommentViewSet,
     UserResourceListView,
-    FollowViewSet, UserSearchView, ResourceSearchView, PasswordResetRequestAPIView, PasswordResetConfirmAPIView
+    FollowViewSet, UserSearchView, ResourceSearchView, PasswordResetRequestAPIView, PasswordResetConfirmAPIView,
+    GitHubRepoSearchAPIView
 )
 
 router = routers.DefaultRouter()
@@ -35,6 +36,7 @@ urlpatterns = [
     path('password-reset/', PasswordResetRequestAPIView.as_view(), name='password_reset_request'),
     path('password-reset-confirm/<str:uidb64>/<str:token>/', PasswordResetConfirmAPIView.as_view(),
          name='password_reset_confirm'),
+    path('github-repo-search/', GitHubRepoSearchAPIView.as_view(), name='github_repo_search'),
 
 
 ]

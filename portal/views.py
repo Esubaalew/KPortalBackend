@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+import requests
 
 
 class MyTokenGenerator(PasswordResetTokenGenerator):
@@ -341,3 +342,20 @@ class PasswordResetConfirmAPIView(APIView):
                 return Response({'error': 'Invalid user ID.'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GitHubRepoSearchAPIView(APIView):
+    def get(self, request):
+        search_query = request.query_params.get('query')
+        if not search_query:
+            return Response({'error': 'Search query is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        github_api_url = f'https://api.github.com/search/repositories?q={search_query}'
+        headers = {'Authorization': f'Bearer {settings.GITHUB_ACCESS_TOKEN}'}
+        response = requests.get(github_api_url, headers=headers)
+
+        if response.status_code == 200:
+            search_results = response.json().get('items', [])
+            return Response(search_results, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Failed to fetch search results'}, status=response.status_code)

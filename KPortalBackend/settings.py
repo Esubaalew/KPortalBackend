@@ -151,3 +151,4 @@ EMAIL_HOST_USER = 'esubalewchekol6@gmail.com'
 EMAIL_HOST_PASSWORD = 'uyvf eyov orqa yrcv'
 
 FRONTEND_URL = 'https://enimar.esube.com.et'
+GITHUB_ACCESS_TOKEN = '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'
