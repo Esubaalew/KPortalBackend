@@ -36,7 +36,7 @@ urlpatterns = [
     path('password-reset/', PasswordResetRequestAPIView.as_view(), name='password_reset_request'),
     path('password-reset-confirm/<str:uidb64>/<str:token>/', PasswordResetConfirmAPIView.as_view(),
          name='password_reset_confirm'),
-    path('github-repo-search/', GitHubRepoSearchAPIView.as_view(), name='github_repo_search'),
+    path('github/repos/', GitHubRepoSearchAPIView.as_view(), name='github_repo_search'),
 
 
 ]
