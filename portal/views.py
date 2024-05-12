@@ -181,6 +181,7 @@ def logged_in_user(request):
 
 
 class GetUserByUsername(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get(self, request, username):
         try:
             user = CustomUser.objects.get(username=username)
