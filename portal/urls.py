@@ -10,7 +10,8 @@ from .views import (
     UserResourceListView,
     FollowViewSet, UserSearchView, ResourceSearchView, PasswordResetRequestAPIView, PasswordResetConfirmAPIView,
     GitHubRepoSearchAPIView,
-    LanguageViewSet
+    LanguageViewSet,
+    LanguageResourceViewSet
 )
 
 router = routers.DefaultRouter()
@@ -39,4 +40,6 @@ urlpatterns = [
     path('password-reset-confirm/<str:uidb64>/<str:token>/', PasswordResetConfirmAPIView.as_view(),
          name='password_reset_confirm'),
     path('github/repos/', GitHubRepoSearchAPIView.as_view(), name='github_repo_search'),
+    path('resources/language/<int:language_id>/', LanguageResourceViewSet.as_view({'get': 'list'}), name='language'
+                                                                                                        '-resource-list')
 ]

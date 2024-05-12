@@ -365,3 +365,16 @@ class LanguageViewSet(viewsets.ModelViewSet):
     queryset = Language.objects.all()
     serializer_class = LanguageSerializer
     permission_classes = [permissions.AllowAny]
+
+
+class LanguageResourceViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def list(self, request, language_id):
+        try:
+            resources = Resource.objects.filter(language_id=language_id)
+            serializer = ResourceSerializer(resources, many=True)
+
+            return Response(serializer.data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
