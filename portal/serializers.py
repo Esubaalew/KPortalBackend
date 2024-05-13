@@ -17,7 +17,7 @@ class ResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Resource
         fields = [
-            'id', 'language',  'language_name',
+            'id', 'language', 'language_name',
             'caption', 'topic', 'owner', 'url', 'file',
             'photo', 'date_shared', 'date_modified',
             'likes_count', 'comments_count'
@@ -134,3 +134,18 @@ class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
         fields = ['id', 'name', 'shorty', 'description']
+
+
+from rest_framework.serializers import SerializerMethodField
+
+
+class TopUsersSerializer(serializers.ModelSerializer):
+    username = serializers.CharField()
+    num_resources_shared = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'num_resources_shared']
+
+    def get_num_resources_shared(self, obj):
+        return Resource.objects.filter(owner=obj).count()

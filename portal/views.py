@@ -1,7 +1,7 @@
 import six
 from django.contrib.auth import authenticate, login
 from django.core.mail import send_mail, EmailMultiAlternatives
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
@@ -17,7 +17,7 @@ import requests
 from KPortalBackend import settings
 from .serializers import CustomUserSerializer, ResourceSerializer, UserSerializer, UserSignInSerializer, LikeSerializer, \
     CommentSerializer, FollowSerializer, UserSearchSerializer, ResourceSearchSerializer, PasswordResetConfirmSerializer, \
-    PasswordResetRequestSerializer, LanguageSerializer
+    PasswordResetRequestSerializer, LanguageSerializer, TopUsersSerializer
 from rest_framework import viewsets, status, generics, permissions
 from PyPDF2 import PdfReader
 from .models import Resource, CustomUser, Like, Comment, Follow, Language
@@ -379,3 +379,10 @@ class LanguageResourceViewSet(viewsets.ViewSet):
             return Response(serializer.data)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class TopUsersAPIView(APIView):
+    def get(self, request, format=None):
+        top_users = CustomUser.objects.annotate(num_resources_shared=Count('resource')).order_by('-num_resources_shared')[:10]
+        serializer = TopUsersSerializer(top_users, many=True)
+        return Response(serializer.data)
