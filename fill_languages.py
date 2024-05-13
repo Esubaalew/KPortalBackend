@@ -425,7 +425,7 @@
 # users = CustomUser.objects.all()
 #
 # # Generate and insert mock data for resources
-# for i in range(30):
+# for i in range(100):
 #     language = random.choice(languages)
 #     owner = random.choice(users)
 #     caption = fake.sentence()
