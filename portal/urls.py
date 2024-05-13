@@ -13,7 +13,8 @@ from .views import (
     LanguageViewSet,
     LanguageResourceViewSet,
     TopUsersAPIView,
-    TopLanguagesAPIView
+    TopLanguagesAPIView,
+    TopResourcesAPIView
 )
 
 router = routers.DefaultRouter()
@@ -45,5 +46,6 @@ urlpatterns = [
     path('resources/language/<int:language_id>/', LanguageResourceViewSet.as_view({'get': 'list'}), name='language'
                                                                                                         '-resource-list'),
     path('top-users/', TopUsersAPIView.as_view(), name='top-users'),
-    path('top-languages/', TopLanguagesAPIView.as_view(), name='top-languages')
+    path('top-languages/', TopLanguagesAPIView.as_view(), name='top-languages'),
+    path('top-resources/', TopResourcesAPIView.as_view(), name='top-resources'),
 ]

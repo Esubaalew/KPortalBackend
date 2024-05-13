@@ -393,3 +393,9 @@ class TopLanguagesAPIView(APIView):
         top_languages = Language.objects.annotate(num_resources=Count('resource')).order_by('-num_resources')[:20]
         serializer = TopLanguagesSerializer(top_languages, many=True)
         return Response(serializer.data)
+
+class TopResourcesAPIView(APIView):
+    def get(self, request, format=None):
+        top_resources = Resource.objects.annotate(num_likes=Count('likes')).order_by('-num_likes')[:10]
+        data = [{'resource_id': resource.id, 'num_likes': resource.num_likes} for resource in top_resources]
+        return Response(data)
