@@ -149,3 +149,15 @@ class TopUsersSerializer(serializers.ModelSerializer):
 
     def get_num_resources_shared(self, obj):
         return Resource.objects.filter(owner=obj).count()
+
+
+class TopLanguagesSerializer(serializers.ModelSerializer):
+    num_resources = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Language
+        fields = ['id', 'name', 'num_resources']
+
+    def get_num_resources(self, obj):
+
+        return Resource.objects.filter(language=obj).count()

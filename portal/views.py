@@ -17,7 +17,7 @@ import requests
 from KPortalBackend import settings
 from .serializers import CustomUserSerializer, ResourceSerializer, UserSerializer, UserSignInSerializer, LikeSerializer, \
     CommentSerializer, FollowSerializer, UserSearchSerializer, ResourceSearchSerializer, PasswordResetConfirmSerializer, \
-    PasswordResetRequestSerializer, LanguageSerializer, TopUsersSerializer
+    PasswordResetRequestSerializer, LanguageSerializer, TopUsersSerializer, TopLanguagesSerializer
 from rest_framework import viewsets, status, generics, permissions
 from PyPDF2 import PdfReader
 from .models import Resource, CustomUser, Like, Comment, Follow, Language
@@ -385,4 +385,11 @@ class TopUsersAPIView(APIView):
     def get(self, request, format=None):
         top_users = CustomUser.objects.annotate(num_resources_shared=Count('resource')).order_by('-num_resources_shared')[:10]
         serializer = TopUsersSerializer(top_users, many=True)
+        return Response(serializer.data)
+
+
+class TopLanguagesAPIView(APIView):
+    def get(self, request, format=None):
+        top_languages = Language.objects.annotate(num_resources=Count('resource')).order_by('-num_resources')[:20]
+        serializer = TopLanguagesSerializer(top_languages, many=True)
         return Response(serializer.data)
