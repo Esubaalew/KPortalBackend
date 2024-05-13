@@ -182,6 +182,7 @@ def logged_in_user(request):
 
 class GetUserByUsername(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     def get(self, request, username):
         try:
             user = CustomUser.objects.get(username=username)
@@ -383,16 +384,18 @@ class LanguageResourceViewSet(viewsets.ViewSet):
 
 class TopUsersAPIView(APIView):
     def get(self, request, format=None):
-        top_users = CustomUser.objects.annotate(num_resources_shared=Count('resource')).order_by('-num_resources_shared')[:10]
+        top_users = CustomUser.objects.annotate(num_resources_shared=Count('resource')).order_by(
+            '-num_resources_shared')[:10]
         serializer = TopUsersSerializer(top_users, many=True)
         return Response(serializer.data)
 
 
 class TopLanguagesAPIView(APIView):
     def get(self, request, format=None):
-        top_languages = Language.objects.annotate(num_resources=Count('resource')).order_by('-num_resources')[:20]
+        top_languages = Language.objects.annotate(num_resources=Count('resource')).order_by('-num_resources')[:10]
         serializer = TopLanguagesSerializer(top_languages, many=True)
         return Response(serializer.data)
+
 
 class TopResourcesAPIView(APIView):
     def get(self, request, format=None):
