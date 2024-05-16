@@ -18,9 +18,7 @@ docx==0.2.4
 executing==2.0.1
 Faker==25.2.0
 filelock==3.14.0
-google-ai-generativelanguage==0.6.2
 google-api-core==2.19.0
-google-api-python-client==2.129.0
 google-auth==2.29.0
 google-auth-httplib2==0.2.0
 google-generativeai==0.5.2
