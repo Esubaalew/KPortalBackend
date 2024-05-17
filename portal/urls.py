@@ -14,7 +14,7 @@ from .views import (
     LanguageResourceViewSet,
     TopUsersAPIView,
     TopLanguagesAPIView,
-    TopResourcesAPIView
+    TopResourcesAPIView, LanguageProportionAPIView
 )
 
 router = routers.DefaultRouter()
@@ -44,8 +44,9 @@ urlpatterns = [
          name='password_reset_confirm'),
     path('github/repos/', GitHubRepoSearchAPIView.as_view(), name='github_repo_search'),
     path('resources/language/<int:language_id>/', LanguageResourceViewSet.as_view({'get': 'list'}), name='language'
-                                                                                                        '-resource-list'),
+                                                                                                         '-resource-list'),
     path('top-users/', TopUsersAPIView.as_view(), name='top-users'),
     path('top-languages/', TopLanguagesAPIView.as_view(), name='top-languages'),
     path('top-resources/', TopResourcesAPIView.as_view(), name='top-resources'),
+    path('languages/<int:language_id>/proportion/', LanguageProportionAPIView.as_view(), name='language-proportion'),
 ]

@@ -17,7 +17,8 @@ import requests
 from KPortalBackend import settings
 from .serializers import CustomUserSerializer, ResourceSerializer, UserSerializer, UserSignInSerializer, LikeSerializer, \
     CommentSerializer, FollowSerializer, UserSearchSerializer, ResourceSearchSerializer, PasswordResetConfirmSerializer, \
-    PasswordResetRequestSerializer, LanguageSerializer, TopUsersSerializer, TopLanguagesSerializer
+    PasswordResetRequestSerializer, LanguageSerializer, TopUsersSerializer, TopLanguagesSerializer, \
+    LanguageProportionSerializer
 from rest_framework import viewsets, status, generics, permissions
 from PyPDF2 import PdfReader
 from .models import Resource, CustomUser, Like, Comment, Follow, Language
@@ -402,3 +403,35 @@ class TopResourcesAPIView(APIView):
         top_resources = Resource.objects.annotate(num_likes=Count('likes')).order_by('-num_likes')[:10]
         data = [{'resource_id': resource.id, 'num_likes': resource.num_likes} for resource in top_resources]
         return Response(data)
+
+
+class LanguageProportionsAPIView(APIView):
+    def get(self, request, format=None):
+        total_resources = Resource.objects.count()
+        languages = Language.objects.annotate(
+            proportion=Count('resource') / total_resources
+        ).values('name', 'proportion')
+
+        threshold = 0.05
+        languages = [
+            lang for lang in languages
+            if lang['proportion'] >= threshold
+        ]
+
+        others_proportion = 1 - sum(lang['proportion'] for lang in languages)
+
+        # Append the "Others" category to the languages list
+        languages.append({'name': 'Others', 'proportion': others_proportion})
+
+        return Response({'languages': languages})
+
+
+class LanguageProportionAPIView(APIView):
+    def get(self, request, language_id):
+        try:
+            language = Language.objects.get(pk=language_id)
+        except Language.DoesNotExist:
+            return Response({"error": "Language not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = LanguageProportionSerializer(language)
+        return Response(serializer.data)
