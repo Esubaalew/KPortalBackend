@@ -164,13 +164,21 @@ class TopLanguagesSerializer(serializers.ModelSerializer):
 
 class LanguageProportionSerializer(serializers.ModelSerializer):
     proportion = serializers.SerializerMethodField()
+    others = serializers.SerializerMethodField()
 
     class Meta:
         model = Language
-        fields = ['id', 'name', 'proportion']
+        fields = ['id', 'name', 'proportion', 'others']
 
     def get_proportion(self, obj):
         total_resources = Resource.objects.count()
         language_resources = Resource.objects.filter(language=obj).count()
         proportion = language_resources / total_resources if total_resources != 0 else 0
         return proportion
+
+    def get_others(self, obj):
+        total_resources = Resource.objects.count()
+        language_resources = Resource.objects.filter(language=obj).count()
+        other_languages_resources = total_resources - language_resources
+        others_proportion = other_languages_resources / total_resources if total_resources != 0 else 0
+        return others_proportion
