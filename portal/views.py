@@ -147,6 +147,19 @@ class UserSignUpView(generics.CreateAPIView):
                 'access': str(refresh.access_token),
             }, status=status.HTTP_201_CREATED)
 
+    def send_welcome_email(self, user):
+        subject = 'Welcome to Enimar Portal!'
+        from_email = settings.EMAIL_HOST_USER
+        recipient_list = [user.email]
+        frontend_url = settings.FRONTEND_URL
+
+        html_content = render_to_string('welcome.html', {'username': user.username, 'frontend_url': frontend_url})
+        text_content = strip_tags(html_content)
+
+        msg = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+        msg.attach_alternative(html_content, "text/html")
+        msg.send(fail_silently=False)
+
 
 class UserSignInView(generics.CreateAPIView):
     serializer_class = UserSignInSerializer
