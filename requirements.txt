@@ -1,7 +1,7 @@
 annotated-types==0.6.0
 asgiref==3.8.1
 asttokens==2.4.1
-attrs==23.2.0
+attrs==23.1.2
 autobahn==23.6.2
 Automat==22.10.0
 backcall==0.2.0
