@@ -29,6 +29,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    # 'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,7 +39,9 @@ INSTALLED_APPS = [
     'rest_framework',
     "portal.apps.PortalConfig",
     "chat.apps.ChatConfig",
+    'wikipedia_app.apps.WikipediaAppConfig',
     'corsheaders',
+
 ]
 
 MIDDLEWARE = [
@@ -155,11 +158,19 @@ FRONTEND_URL = 'https://enimar.esube.com.et'
 GITHUB_ACCESS_TOKEN = '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'
 
 
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             'hosts': [('127.0.0.1', 6379)],
+#         },
+#     },
+# }
+
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [('127.0.0.1', 6379)],
-        },
-    },
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
 }
+
+ASGI_APPLICATION = "KPortalBackend.asgi.application"

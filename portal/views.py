@@ -405,27 +405,6 @@ class TopResourcesAPIView(APIView):
         return Response(data)
 
 
-class LanguageProportionsAPIView(APIView):
-    def get(self, request, format=None):
-        total_resources = Resource.objects.count()
-        languages = Language.objects.annotate(
-            proportion=Count('resource') / total_resources
-        ).values('name', 'proportion')
-
-        threshold = 0.05
-        languages = [
-            lang for lang in languages
-            if lang['proportion'] >= threshold
-        ]
-
-        others_proportion = 1 - sum(lang['proportion'] for lang in languages)
-
-        # Append the "Others" category to the languages list
-        languages.append({'name': 'Others', 'proportion': others_proportion})
-
-        return Response({'languages': languages})
-
-
 class LanguageProportionAPIView(APIView):
     def get(self, request, language_id):
         try:
