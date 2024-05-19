@@ -141,6 +141,7 @@ class UserSignUpView(generics.CreateAPIView):
         user = serializer.save()
         if user:
             refresh = RefreshToken.for_user(user)
+            self.send_welcome_email(user)
             # Return tokens as JSON data along with HTTP 201 Created
             return Response({
                 'refresh': str(refresh),
