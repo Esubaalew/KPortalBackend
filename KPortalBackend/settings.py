@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -153,6 +154,13 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'esubalewchekol6@gmail.com'
 EMAIL_HOST_PASSWORD = 'uyvf eyov orqa yrcv'
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
+}
+
 
 FRONTEND_URL = 'https://enimar.esube.com.et'
 GITHUB_ACCESS_TOKEN = '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'
