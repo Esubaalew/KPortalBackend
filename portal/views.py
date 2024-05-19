@@ -92,6 +92,7 @@ class ResourceViewSet(viewsets.ModelViewSet):
         user = request.user
         like, created = Like.objects.get_or_create(resource=resource, user=user)
         if created:
+            self.send_like_notification(resource, user)
             return Response({'message': 'Resource liked'})
         else:
             return Response({'message': 'Resource already liked'}, status=status.HTTP_400_BAD_REQUEST)
@@ -113,7 +114,7 @@ class ResourceViewSet(viewsets.ModelViewSet):
         user = request.user
         comment_text = request.data.get('comment')
         if comment_text:
-            comment = Comment.objects.create(resource=resource, user=user, comment=comment_text)
+            Comment.objects.create(resource=resource, user=user, comment=comment_text)
             return Response({'message': 'Comment added'})
         else:
             return Response({'error': 'Comment text is required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -131,6 +132,28 @@ class ResourceViewSet(viewsets.ModelViewSet):
         likes = resource.likes.all()
         serializer = LikeSerializer(likes, many=True)
         return Response(serializer.data)
+
+    def send_like_notification(self, resource, user):
+        recipient_user = resource.owner
+        subject = 'You Got a Like!'
+        from_email = settings.EMAIL_HOST_USER
+        recipient_email = recipient_user.email
+        frontend_url = settings.FRONTEND_URL
+
+        html_content = render_to_string('liked.html', {
+            'recipient_username': recipient_user.username,
+            'liker_first_name': user.first_name,
+            'liker_last_name': user.last_name,
+            'liker_username': user.username,
+            'resource_caption': resource.caption,
+            'resource_id': resource.id,
+            'frontend_url': frontend_url,
+        })
+        text_content = strip_tags(html_content)
+
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [recipient_email])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send(fail_silently=False)
 
 
 class UserSignUpView(generics.CreateAPIView):
