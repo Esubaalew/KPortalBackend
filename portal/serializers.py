@@ -87,9 +87,11 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
+        validated_data.pop('user', None)
         user = self.context['request'].user
         comment = Comment.objects.create(user=user, **validated_data)
         return comment
+
 
 
 class FollowSerializer(serializers.ModelSerializer):
