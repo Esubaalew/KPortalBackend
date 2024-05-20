@@ -262,12 +262,16 @@ class FollowViewSet(viewsets.ModelViewSet):
         try:
             followed_user = CustomUser.objects.get(id=followed_user_id)
             if follower != followed_user:
-                Follow.objects.create(follower=follower, followed_user=followed_user)
-                return Response({'message': f'You are now following {followed_user.username}'})
+                follow, created = Follow.objects.get_or_create(follower=follower, followed_user=followed_user)
+                if created:
+                    self.send_follow_notification(followed_user, follower)
+                    return Response({'message': f'You are now following {followed_user.username}'})
+                else:
+                    return Response({'message': 'You are already following this user'}, status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response({'error': 'You cannot follow yourself'})
+                return Response({'error': 'You cannot follow yourself'}, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
-            return Response({'error': 'User not found'})
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
     @action(detail=False, methods=['post'])
     def unfollow_user(self, request):
@@ -280,9 +284,28 @@ class FollowViewSet(viewsets.ModelViewSet):
                 follow_instance.delete()
                 return Response({'message': f'You have unfollowed {followed_user.username}'})
             else:
-                return Response({'error': 'You were not following this user'})
+                return Response({'error': 'You were not following this user'}, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
-            return Response({'error': 'User not found'})
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def send_follow_notification(self, followed_user, follower):
+        subject = 'New Follower Alert!'
+        from_email = settings.EMAIL_HOST_USER
+        recipient_list = [followed_user.email]
+        frontend_url = settings.FRONTEND_URL
+
+        html_content = render_to_string('followed.html', {
+            'followed_username': followed_user.username,
+            'follower_first_name': follower.first_name,
+            'follower_last_name': follower.last_name,
+            'follower_username': follower.username,
+            'frontend_url': frontend_url,
+        })
+        text_content = strip_tags(html_content)
+
+        msg = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+        msg.attach_alternative(html_content, "text/html")
+        msg.send(fail_silently=False)
 
 
 class UserSearchView(APIView):
