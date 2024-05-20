@@ -23,7 +23,7 @@ from .views import (
     TopUsersAPIView,
     TopLanguagesAPIView,
     TopResourcesAPIView,
-    LanguageProportionAPIView
+    LanguageProportionAPIView, ResourceCommentsAPIView
 )
 
 router = routers.DefaultRouter()
@@ -59,4 +59,5 @@ urlpatterns = [
     path('top-languages/', TopLanguagesAPIView.as_view(), name='top-languages'),
     path('top-resources/', TopResourcesAPIView.as_view(), name='top-resources'),
     path('languages/<int:language_id>/proportion/', LanguageProportionAPIView.as_view(), name='language-proportion'),
+path('resource/<int:pk>/comments/', ResourceCommentsAPIView.as_view(), name='resource-comments'),
 ]

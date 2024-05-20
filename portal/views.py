@@ -481,3 +481,21 @@ class LanguageProportionAPIView(APIView):
 
         serializer = LanguageProportionSerializer(language)
         return Response(serializer.data)
+
+
+class ResourceCommentsAPIView(generics.ListAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+
+        resource_id = self.kwargs['pk']
+
+        try:
+
+            resource = Resource.objects.get(pk=resource_id)
+
+            return Comment.objects.filter(resource=resource)
+        except Resource.DoesNotExist:
+
+            return Comment.objects.none()
