@@ -56,6 +56,13 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = FollowSerializer(following, many=True)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['post'])
+    def deactivate(self, request, pk=None):
+        user = self.get_object()
+        user.is_active = False
+        user.save()
+        return Response({'status': 'user deactivated'})
+
 
 class ResourceViewSet(viewsets.ModelViewSet):
     queryset = Resource.objects.select_related('owner').prefetch_related('likes', 'comments')
