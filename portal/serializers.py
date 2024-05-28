@@ -6,7 +6,7 @@ from .models import CustomUser, Resource, Like, Comment, Follow, Language
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'first_name', 'last_name', 'bio']
+        fields = ['id', 'username', 'first_name', 'last_name',  'email', 'bio',]
 
 
 class ResourceSerializer(serializers.ModelSerializer):

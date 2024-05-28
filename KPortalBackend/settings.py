@@ -39,8 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     "portal.apps.PortalConfig",
-    "chat.apps.ChatConfig",
     'wikipedia_app.apps.WikipediaAppConfig',
+    'gpt_app.apps.GptAppConfig',
+    'messaging.apps.MessagingConfig',
     'corsheaders',
 
 ]
