@@ -24,7 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('portal.urls')),
     path('api/wiki/', include('wikipedia_app.urls')),
-    path('api/gpt/', include('gpt_app.urls')),
     path('api/chat/', include('messaging.urls')),
     path('', RedirectView.as_view(url='/api/', permanent=False)),
 ]

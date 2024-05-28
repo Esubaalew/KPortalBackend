@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'rest_framework',
     "portal.apps.PortalConfig",
     'wikipedia_app.apps.WikipediaAppConfig',
-    'gpt_app.apps.GptAppConfig',
     'messaging.apps.MessagingConfig',
     'corsheaders',
 
