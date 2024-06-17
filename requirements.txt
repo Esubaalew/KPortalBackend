@@ -77,7 +77,7 @@ txaio==23.1.1
 typing_extensions==4.11.0
 tzdata==2024.1
 uritemplate==4.1.1
-urllib3==2.2.1
+urllib3==2.2.2
 uvicorn==0.29.0
 virtualenv==20.26.1
 wcwidth==0.2.13
