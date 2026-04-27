@@ -1,4 +1,5 @@
 # messaging/views.py
+import logging
 from django.core.mail import EmailMessage
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -12,6 +13,9 @@ from .models import Group, Message
 from .serializers import GroupSerializer, MessageSerializer, PrivateChatSerializer, LatestMessageSerializer
 from portal.models import CustomUser
 from django.db.models import Q, Max
+
+
+logger = logging.getLogger(__name__)
 
 
 class GroupListCreate(generics.ListCreateAPIView):
@@ -143,5 +147,8 @@ class SendEmailView(APIView):
 
             return Response({'message': 'Email sent successfully'}, status=status.HTTP_200_OK)
         except Exception as e:
-            print(f"Error: {e}")
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            logger.exception("Failed to send email")
+            return Response(
+                {'error': 'An internal error occurred while sending email.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
