@@ -7,7 +7,7 @@ Automat==22.10.0
 backcall==0.2.0
 beautifulsoup4==4.12.3
 cachetools==5.3.3
-certifi==2024.2.2
+certifi==2024.7.4
 cffi==1.16.0
 channels==4.1.0
 channels-redis==4.2.0
@@ -21,7 +21,7 @@ decorator==5.1.1
 distlib==0.3.8
 Django==4.2.11
 django-cors-headers==4.3.1
-djangorestframework==3.15.1
+djangorestframework==3.15.2
 djangorestframework-simplejwt==5.3.1
 docx==0.2.4
 executing==2.0.1
@@ -66,7 +66,7 @@ redis==5.0.4
 requests==2.32.2
 rsa==4.9
 service-identity==24.1.0
-setuptools==69.5.1
+setuptools==70.0.0
 six==1.16.0
 soupsieve==2.5
 sqlparse==0.5.0
@@ -77,7 +77,7 @@ txaio==23.1.1
 typing_extensions==4.11.0
 tzdata==2024.1
 uritemplate==4.1.1
-urllib3==2.2.1
+urllib3==2.2.2
 uvicorn==0.29.0
 virtualenv==20.26.1
 wcwidth==0.2.13
