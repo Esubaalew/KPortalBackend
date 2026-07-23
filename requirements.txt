@@ -50,7 +50,7 @@ prompt-toolkit==3.0.43
 proto-plus==1.23.0
 protobuf==5.29.6
 pure-eval==0.2.2
-pyasn1==0.6.3
+pyasn1==0.6.4
 pyasn1_modules==0.4.0
 pycparser==2.22
 pydantic==2.7.1
@@ -66,7 +66,7 @@ redis==5.0.4
 requests==2.33.0
 rsa==4.9
 service-identity==24.1.0
-setuptools==78.1.1
+setuptools==83.0.0
 six==1.16.0
 soupsieve==2.8.4
 sqlparse==0.5.4
